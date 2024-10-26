@@ -1,6 +1,6 @@
 ## 一个非常简单的空间搜索引擎api 调用工具：fofa
 
-### 双击运行 app.exe 文件
+### 双击运行 fofa-web.exe 文件
 
 ![image](https://github.com/user-attachments/assets/9da63f9e-9e34-49e5-a38d-4c4c9b05ff65)
 
