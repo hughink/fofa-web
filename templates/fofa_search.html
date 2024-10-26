@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产检索</title>
+    <!-- 引入最新版本的 Bulma CSS 框架 -->
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+    <!-- 引入 FontAwesome 图标库 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- 引入 Chart.js 图表库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 引入 DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- 引入自定义 CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/fofa_search">
+                <span class="icon is-large">
+                    <i class="fas fa-search fa-2x"></i>
+                </span>
+                <span class="title is-4 ml-2">资产检索-</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主体内容 -->
+    <section class="section">
+        <div class="container is-fluid">
+            <div class="search-section">
+                <form method="post" action="/fofa_search" class="field has-addons">
+                    <div class="control is-expanded">
+                        <input class="input is-medium" type="text" name="query" placeholder="输入您的查询" required>
+                    </div>
+                    <div class="control">
+                        <input class="input is-medium" type="number" name="size" placeholder="查询条数" value="200" min="1">
+                    </div>
+                    <div class="control">
+                        <button class="button is-info is-medium" type="submit">搜索</button>
+                    </div>
+                    <div class="control">
+                        <a class="button is-link is-medium" href="/fofa_yf.html" target="_blank">查询语法参考</a>
+                    </div>
+                    <div class="control">
+                        <div class="select is-medium">
+                            <select onchange="exportResults(this.value)">
+                                <option value="">导出</option>
+                                <option value="all">导出所有</option>
+                                <option value="ip">导出IP</option>
+                                <option value="host">导出Host</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="columns is-gapless draggable">
+                <div class="column is-one-quarter">
+                    <div class="box">
+                        <h2 class="title is-5">数据统计分析 <i class="fas fa-chart-pie"></i></h2>
+                        <div class="chart-container">
+                            <canvas id="statsChart"></canvas>
+                        </div>
+                        <div id="stats-container" class="stats-container">
+                            <!-- C段 统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-cidr" class="is-hidden">
+                                <label for="collapse-cidr"><strong class="cidr-count"><i class="fas fa-code-branch"></i> C段统计: <span id="cidrCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('cidrList')">复制</button>
+                                    </div>
+                                    <ul id="cidrList"></ul>
+                                </div>
+                            </div>
+
+                            <!-- IPv4 统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-ipv4" class="is-hidden">
+                                <label for="collapse-ipv4"><strong class="ipv4-count"><i class="fas fa-vote-yea"></i> IPv4: <span id="ipv4Count">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('ipv4List')">复制</button>
+                                    </div>
+                                    <ul id="ipv4List"></ul>
+                                </div>
+                            </div>
+                            <!-- IPv6 统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-ipv6" class="is-hidden">
+                                <label for="collapse-ipv6"><strong class="ipv6-count"><i class="fas fa-vote-yea"></i> IPv6: <span id="ipv6Count">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('ipv6List')">复制</button>
+                                    </div>
+                                    <ul id="ipv6List"></ul>
+                                </div>
+                            </div>
+                            <!-- 根域名统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-root-domain" class="is-hidden">
+                                <label for="collapse-root-domain"><strong class="root-domain-count"><i class="fas fa-globe"></i> 根域名: <span id="rootDomainCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('rootDomainList')">复制</button>
+                                    </div>
+                                    <ul id="rootDomainList"></ul>
+                                </div>
+                            </div>
+                            <!-- 子域名统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-sub-domain" class="is-hidden">
+                                <label for="collapse-sub-domain"><strong class="sub-domain-count"><i class="fas fa-globe-americas"></i> 子域名: <span id="subDomainCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('subDomainList')">复制</button>
+                                    </div>
+                                    <ul id="subDomainList"></ul>
+                                </div>
+                            </div>
+                            <!-- 标题统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-title" class="is-hidden">
+                                <label for="collapse-title"><strong class="title-count"><i class="fas fa-heading"></i> 标题: <span id="titleCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('titleList')">复制</button>
+                                    </div>
+                                    <ul id="titleList"></ul>
+                                </div>
+                            </div>
+                            <!-- 协议统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-protocol" class="is-hidden">
+                                <label for="collapse-protocol"><strong class="protocol-count"><i class="fas fa-network-wired"></i> 协议: <span id="protocolCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('protocolList')">复制</button>
+                                    </div>
+                                    <ul id="protocolList"></ul>
+                                </div>
+                            </div>
+                            <!-- 端口统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-port" class="is-hidden">
+                                <label for="collapse-port"><strong class="port-count"><i class="fas fa-plug"></i> 端口: <span id="portCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('portList')">复制</button>
+                                    </div>
+                                    <ul id="portList"></ul>
+                                </div>
+                            </div>
+                            <!-- ICP备案统计 -->
+                            <div class="collapse">
+                                <input type="checkbox" id="collapse-icp" class="is-hidden">
+                                <label for="collapse-icp"><strong class="icp-count"><i class="fas fa-file-signature"></i> ICP备案统计: <span id="icpCount">0</span></strong></label>
+                                <div class="collapse-content">
+                                    <div class="copy-buttons">
+                                        <button class="button is-small is-info" onclick="copyList('icpList')">复制</button>
+                                    </div>
+                                    <ul id="icpList"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="drag-handle"></div>
+                <div class="column is-three-quarters">
+                    <div class="box">
+                        {% if error_msg %}
+                            <div class="notification is-danger">
+                                <button class="delete"></button>
+                                {{ error_msg }}
+                            </div>
+                        {% endif %}
+
+                        {% if results %}
+                            <div class="table-container">
+                                <table id="resultsTable" class="table is-striped is-hoverable is-fullwidth is-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th> <!-- 新增序号列 -->
+                                            <th>主机</th>
+                                            <th>IP</th>
+                                            <th>端口</th>
+                                            <th>协议</th>
+                                            <th>域名</th>
+                                            <th>标题</th>
+                                            <th>系统</th>
+                                            <th>服务</th>
+                                            <th>ICP</th>
+                                            <th>国家</th>
+                                            <th>地区</th>
+                                            <th>城市</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for result in results %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td> <!-- 显示序号 -->
+                                            <td title="{{ result.host|safe }}" ondblclick="copyToClipboard(this)">{{ result.host|safe }}</td>
+                                            <td title="{{ result.ip|safe }}" ondblclick="copyToClipboard(this)">{{ result.ip|safe }}</td>
+                                            <td title="{{ result.port|safe }}" ondblclick="copyToClipboard(this)">{{ result.port|safe }}</td>
+                                            <td title="{{ result.protocol|safe }}" ondblclick="copyToClipboard(this)">{{ result.protocol|safe }}</td>
+                                            <td title="{{ result.domain|safe }}" ondblclick="copyToClipboard(this)">{{ result.domain|safe }}</td>
+                                            <td title="{{ result.title|safe }}" ondblclick="copyToClipboard(this)">{{ result.title|safe }}</td>
+                                            <td title="{{ result.os|safe }}" ondblclick="copyToClipboard(this)">{{ result.os|safe }}</td>
+                                            <td title="{{ result.server|safe }}" ondblclick="copyToClipboard(this)">{{ result.server|safe }}</td>
+                                            <td title="{{ result.icp|safe }}" ondblclick="copyToClipboard(this)">{{ result.icp|safe }}</td>
+                                            <td title="{{ result.country_name|safe }}" ondblclick="copyToClipboard(this)">{{ result.country_name|safe }}</td>
+                                            <td title="{{ result.region|safe }}" ondblclick="copyToClipboard(this)">{{ result.region|safe }}</td>
+                                            <td title="{{ result.city|safe }}" ondblclick="copyToClipboard(this)">{{ result.city|safe }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="has-text-centered">未找到结果。</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 引入 FontAwesome 图标库（建议放在头部，但加上 defer） -->
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+    <!-- 引入 jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入 DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <!-- 引入自定义 JS -->
+    <script src="js/script.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#resultsTable').DataTable({
+                "paging": true,
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "pageLength": 50, // 默认显示50行
+                "lengthMenu": [ [50, 100, 200, 500, 1000], [50, 100, 200, 500, 1000] ] // 提供的选项
+            });
+        });
+
+        // 导出结果的函数
+        function exportResults(type) {
+            if (!type) return;
+            const results = {{ results|tojson }};
+            const url = type === 'all' ? '/export_all' : (type === 'ip' ? '/export_ip' : '/export_host');
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ results })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${type}_results.csv`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            });
+        }
+
+        // 复制单个元素内容到剪贴板
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            // 显示提示信息1秒钟
+            showTemporaryAlert('已复制到剪贴板: ' + text, 1000);
+        }
+
+        // 复制列表内容到剪贴板
+        function copyList(listId) {
+            const items = Array.from(document.getElementById(listId).children)
+                              .map(li => li.textContent)
+                              .join('\n');
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = items;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+
+            // 显示提示信息1秒钟
+            showTemporaryAlert('已复制所有内容到剪贴板', 1000);
+        }
+
+        // 显示并自动隐藏提示信息
+        function showTemporaryAlert(message, duration) {
+            const alert = document.createElement('div');
+            alert.innerText = message;
+            alert.style.position = 'fixed';
+            alert.style.bottom = '10px';
+            alert.style.right = '10px';
+            alert.style.backgroundColor = '#000';
+            alert.style.color = '#fff';
+            alert.style.padding = '10px';
+            alert.style.borderRadius = '5px';
+            alert.style.zIndex = '1000';
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                document.body.removeChild(alert);
+            }, duration);
+        }
+
+        // 分析结果并统计
+        function analyzeResults(results) {
+            const stats = {
+                uniqueIPs: new Set(),
+                uniqueIPv4: new Set(),
+                uniqueIPv6: new Set(),
+                uniqueHosts: new Set(),
+                uniqueRootDomains: new Set(),
+                uniqueSubDomains: new Set(),
+                uniqueTitles: new Set(),
+                uniqueProtocols: new Set(),
+                uniquePorts: new Set(),
+                cidrCounts: {},
+                icpCounts: {}
+            };
+
+            results.forEach(result => {
+                const ip = result.ip;
+                stats.uniqueIPs.add(ip);
+
+                if (ip.includes(':')) {
+                    stats.uniqueIPv6.add(ip);
+                } else {
+                    stats.uniqueIPv4.add(ip);
+                    // 提取 C 段地址
+                    const cidr = ip.split('.').slice(0, 3).join('.') + '.0/24';
+                    stats.cidrCounts[cidr] = (stats.cidrCounts[cidr] || 0) + 1;
+                }
+
+                const domain = result.domain.replace(/^https?:\/\//, '')
+                                        .replace(/:\d+$/, '')
+                                        .trim(); // 去除前后空白
+                if (domain) { // 确保域名不为空
+                    stats.uniqueRootDomains.add(domain);
+                }
+
+                const hostRegex = /^(?:https?:\/\/)?(?:www\.)?((?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})(?::\d+)?$/;
+                const match = result.host.match(hostRegex);
+                if (match) {
+                    const subDomain = match[1];
+                    stats.uniqueSubDomains.add(subDomain);
+                }
+
+                stats.uniqueTitles.add(result.title);
+                stats.uniqueProtocols.add(result.protocol);
+                stats.uniquePorts.add(result.port);
+
+                const icp = result.icp || '未备案';
+                stats.icpCounts[icp] = (stats.icpCounts[icp] || 0) + 1;
+            });
+
+            return {
+                uniqueIPv4: Array.from(stats.uniqueIPv4).sort(),
+                uniqueIPv6: Array.from(stats.uniqueIPv6).sort(),
+                uniqueRootDomains: Array.from(stats.uniqueRootDomains).sort(),
+                uniqueSubDomains: Array.from(stats.uniqueSubDomains).sort(),
+                uniqueTitles: Array.from(stats.uniqueTitles).sort(),
+                uniqueProtocols: Array.from(stats.uniqueProtocols).sort(),
+                uniquePorts: Array.from(stats.uniquePorts).sort(),
+                cidrCounts: Object.entries(stats.cidrCounts).sort((a, b) => b[1] - a[1]), // C段统计按出现次数排序
+                icpCounts: Object.entries(stats.icpCounts),
+                cidrCount: Object.keys(stats.cidrCounts).length, // C段数量
+                icpCount: Object.keys(stats.icpCounts).length // ICP 备案数量
+            };
+        }
+
+        // 显示统计数据
+        function displayStats(stats) {
+            document.getElementById('ipv4Count').innerText = stats.uniqueIPv4.length;
+            document.getElementById('ipv6Count').innerText = stats.uniqueIPv6.length;
+            document.getElementById('rootDomainCount').innerText = stats.uniqueRootDomains.length;
+            document.getElementById('subDomainCount').innerText = stats.uniqueSubDomains.length;
+            document.getElementById('titleCount').innerText = stats.uniqueTitles.length;
+            document.getElementById('protocolCount').innerText = stats.uniqueProtocols.length;
+            document.getElementById('portCount').innerText = stats.uniquePorts.length;
+            document.getElementById('cidrCount').innerText = stats.cidrCount; // C段数量
+            document.getElementById('icpCount').innerText = stats.icpCount; // ICP数量
+
+            // 显示所有数据
+            document.getElementById('ipv4List').innerHTML = stats.uniqueIPv4.map(ip => `<li>${ip}</li>`).join('');
+            document.getElementById('ipv6List').innerHTML = stats.uniqueIPv6.map(ip => `<li>${ip}</li>`).join('');
+            document.getElementById('rootDomainList').innerHTML = stats.uniqueRootDomains.map(domain => `<li>${domain}</li>`).join('');
+            document.getElementById('subDomainList').innerHTML = stats.uniqueSubDomains.map(subDomain => `<li>${subDomain}</li>`).join('');
+            document.getElementById('titleList').innerHTML = stats.uniqueTitles.map(title => `<li>${title}</li>`).join('');
+            document.getElementById('protocolList').innerHTML = stats.uniqueProtocols.map(protocol => `<li>${protocol}</li>`).join('');
+            document.getElementById('portList').innerHTML = stats.uniquePorts.map(port => `<li>${port}</li>`).join('');
+            document.getElementById('cidrList').innerHTML = stats.cidrCounts.map(([cidr, count]) => `<li>${cidr}: ${count} 次</li>`).join('');
+            document.getElementById('icpList').innerHTML = stats.icpCounts.map(([icp, count]) => `<li>${icp}: ${count} 次</li>`).join('');
+
+            const chartData = {
+                labels: ['IPv4', 'IPv6', 'C段', '根域名', '子域名', '标题', '协议', '端口', 'ICP'],
+                datasets: [{
+                    data: [
+                        stats.uniqueIPv4.length,
+                        stats.uniqueIPv6.length,
+                        stats.cidrCount, // C段数量
+                        stats.uniqueRootDomains.length,
+                        stats.uniqueSubDomains.length,
+                        stats.uniqueTitles.length,
+                        stats.uniqueProtocols.length,
+                        stats.uniquePorts.length,
+                        stats.icpCount // ICP数量
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',    // IPv4
+                        'rgba(255, 99, 132, 0.6)',    // IPv6
+                        'rgba(75, 192, 192, 0.6)',    // C段
+                        'rgba(255, 206, 86, 0.6)',    // 根域名
+                        'rgba(153, 102, 255, 0.6)',   // 子域名
+                        'rgba(255, 159, 64, 0.6)',    // 标题
+                        'rgba(199, 199, 199, 0.6)',    // 协议
+                        'rgba(255, 99, 132, 0.6)',     // 端口
+                        'rgba(255, 206, 86, 0.6)'     // ICP
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(199, 199, 199, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            };
+
+            // 销毁之前的图表（如果存在）
+            if (window.statsChartInstance) {
+                window.statsChartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            window.statsChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: chartData,
+                options: chartOptions
+            });
+        }
+
+        // DOMContentLoaded 事件监听
+        document.addEventListener('DOMContentLoaded', () => {
+            const results = {{ results|tojson }};
+            if (results && results.length > 0) {
+                const stats = analyzeResults(results);
+                displayStats(stats);
+            }
+
+            // 可拖动统计栏
+            const dragHandle = document.querySelector('.drag-handle');
+            const leftColumn = document.querySelector('.column.is-one-quarter');
+            const rightColumn = document.querySelector('.column.is-three-quarters');
+            let isDragging = false;
+
+            dragHandle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                document.body.style.cursor = 'ew-resize';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const containerWidth = leftColumn.parentElement.clientWidth;
+                let newLeftWidth = e.clientX / containerWidth * 100;
+                if (newLeftWidth < 10) newLeftWidth = 10;
+                if (newLeftWidth > 50) newLeftWidth = 50;
+                leftColumn.style.width = `${newLeftWidth}%`;
+                rightColumn.style.width = `${100 - newLeftWidth}%`;
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.cursor = 'default';
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

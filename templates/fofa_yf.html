@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查询语法参考</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #3273dc;
+        }
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #3273dc;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:nth-child(odd) {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">查询语法参考</h1>
+
+        <h2 class="subtitle">高级搜索</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>逻辑连接符</th>
+                    <th>具体含义</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>=</td>
+                    <td>匹配，=""时，可查询不存在字段或者值为空的情况。</td>
+                </tr>
+                <tr>
+                    <td>==</td>
+                    <td>完全匹配，==""时，可查询存在且值为空的情况。</td>
+                </tr>
+                <tr>
+                    <td>&&</td>
+                    <td>与</td>
+                </tr>
+                <tr>
+                    <td>||</td>
+                    <td>或</td>
+                </tr>
+                <tr>
+                    <td>!=</td>
+                    <td>不匹配，!=""时，可查询值不为空的情况。</td>
+                </tr>
+                <tr>
+                    <td>*=</td>
+                    <td>模糊匹配，使用*或者?进行搜索，比如banner*="mys??" (个人版及以上可用)。</td>
+                </tr>
+                <tr>
+                    <td>()</td>
+                    <td>确认查询优先级，括号内容优先级最高。</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>关于建站软件的搜索语法请参考：<a href="https://fofa.info/library" target="_blank">组件列表</a></p>
+
+        <h2 class="subtitle">基础类（General）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ip</td>
+                    <td>ip="1.1.1.1"</td>
+                    <td>通过单一IPv4地址进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip</td>
+                    <td>ip="220.181.111.1/24"</td>
+                    <td>通过IPv4 C段进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip</td>
+                    <td>ip="2600:9000:202a:2600:18:4ab7:f600:93a1"</td>
+                    <td>通过单一Ipv6地址进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>port</td>
+                    <td>port="6379"</td>
+                    <td>通过端口号进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>domain</td>
+                    <td>domain="qq.com"</td>
+                    <td>通过根域名进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>host</td>
+                    <td>host=".fofa.info"</td>
+                    <td>通过主机名进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>os</td>
+                    <td>os="centos"</td>
+                    <td>通过操作系统进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>server</td>
+                    <td>server="Microsoft-IIS/10"</td>
+                    <td>通过服务器进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>asn</td>
+                    <td>asn="19551"</td>
+                    <td>通过自治系统号进行搜索</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>org</td>
+                    <td>org="LLC Baxet"</td>
+                    <td>通过所属组织进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>is_domain</td>
+                    <td>is_domain=true</td>
+                    <td>筛选拥有域名的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_domain</td>
+                    <td>is_domain=false</td>
+                    <td>筛选没有域名的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_ipv6</td>
+                    <td>is_ipv6=true</td>
+                    <td>筛选是ipv6的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_ipv6</td>
+                    <td>is_ipv6=false</td>
+                    <td>筛选是ipv4的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">标记类（Special Label）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>app</td>
+                    <td>app="Microsoft-Exchange"</td>
+                    <td>通过FOFA整理的规则进行查询</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>fid</td>
+                    <td>fid="sSXXGNUO2FefBTcCLIT/2Q=="</td>
+                    <td>通过FOFA聚合的站点指纹进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>product</td>
+                    <td>product="NGINX"</td>
+                    <td>通过FOFA标记的产品名进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>category</td>
+                    <td>category="服务"</td>
+                    <td>通过FOFA标记的分类进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>type="service"</td>
+                    <td>筛选协议资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td>type="subdomain"</td>
+                    <td>筛选服务（网站类）资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>cloud_name</td>
+                    <td>cloud_name="Aliyundun"</td>
+                    <td>通过云服务商进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>is_cloud</td>
+                    <td>is_cloud=true</td>
+                    <td>筛选是云服务的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_cloud</td>
+                    <td>is_cloud=false</td>
+                    <td>筛选不是云服务的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_fraud</td>
+                    <td>is_fraud=true</td>
+                    <td>筛选是仿冒垃圾站群的资产 （专业版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_fraud</td>
+                    <td>is_fraud=false</td>
+                    <td>筛选不是仿冒垃圾站群的资产（已默认筛选）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_honeypot</td>
+                    <td>is_honeypot=true</td>
+                    <td>筛选是蜜罐的资产 （专业版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>is_honeypot</td>
+                    <td>is_honeypot=false</td>
+                    <td>筛选不是蜜罐的资产（已默认筛选）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">协议类（type=service）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>protocol</td>
+                    <td>protocol="quic"</td>
+                    <td>通过协议名称进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>banner</td>
+                    <td>banner="users"</td>
+                    <td>通过协议返回信息进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>base_protocol</td>
+                    <td>base_protocol="udp"</td>
+                    <td>查询传输层为udp协议的资产</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>base_protocol</td>
+                    <td>base_protocol="tcp"</td>
+                    <td>查询传输层为tcp协议的资产</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">网站类（type=subdomain）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>title</td>
+                    <td>title="beijing"</td>
+                    <td>通过网站标题进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>header</td>
+                    <td>header="elastic"</td>
+                    <td>通过响应标头进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>header_hash</td>
+                    <td>header_hash="1258854265"</td>
+                    <td>通过http/https响应头计算的hash值进行查询 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>body</td>
+                    <td>body="网络空间测绘"</td>
+                    <td>通过HTML正文进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>body_hash</td>
+                    <td>body_hash="-2090962452"</td>
+                    <td>通过HTML正文计算的hash值进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>js_name</td>
+                    <td>js_name="js/jquery.js"</td>
+                    <td>通过HTML正文包含的JS进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>js_md5</td>
+                    <td>js_md5="82ac3f14327a8b7ba49baa208d4eaa15"</td>
+                    <td>通过JS源码进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cname</td>
+                    <td>cname="ap21.inst.siteforce.com"</td>
+                    <td>通过别名记录进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cname_domain</td>
+                    <td>cname_domain="siteforce.com"</td>
+                    <td>通过别名记录解析的主域名进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>icon_hash</td>
+                    <td>icon_hash="-247388890"</td>
+                    <td>通过网站图标的hash值进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>status_code</td>
+                    <td>status_code="402"</td>
+                    <td></td>筛选服务状态为402的服务（网站）资产</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>icp</td>
+                    <td>icp="京ICP证030173号"</td>
+                    <td>通过HTML正文包含的ICP备案号进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>sdk_hash</td>
+                    <td>sdk_hash=="Mkb4Ms4R96glv/T6TRzwPWh3UDatBqeF"</td>
+                    <td>通过网站嵌入的第三方代码计算的hash值进行查询 （商业版及以上）</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">地理位置（Location）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>country</td>
+                    <td>country="CN"</td>
+                    <td>通过国家的简称代码进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>country</td>
+                    <td>country="中国"</td>
+                    <td>通过国家中文名称进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>region</td>
+                    <td>region="Zhejiang"</td>
+                    <td>通过省份/地区英文名称进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>region</td>
+                    <td>region="浙江"</td>
+                    <td>通过省份/地区中文名称进行查询（仅支持中国地区）</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>city</td>
+                    <td>city="Hangzhou"</td>
+                    <td>通过城市英文名称进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">证书类</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>cert</td>
+                    <td>cert="baidu"</td>
+                    <td>通过证书进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.subject</td>
+                    <td>cert.subject="Oracle Corporation"</td>
+                    <td>通过证书的持有者进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.issuer</td>
+                    <td>cert.issuer="DigiCert"</td>
+                    <td>通过证书的颁发者进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.subject.org</td>
+                    <td>cert.subject.org="Oracle Corporation"</td>
+                    <td>通过证书持有者的组织进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.subject.cn</td>
+                    <td>cert.subject.cn="baidu.com"</td>
+                    <td>通过证书持有者的通用名称进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.issuer.org</td>
+                    <td>cert.issuer.org="cPanel, Inc."</td>
+                    <td>通过证书颁发者的组织进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.issuer.cn</td>
+                    <td>cert.issuer.cn="Synology Inc. CA"</td>
+                    <td>通过证书颁发者的通用名称进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>cert.is_valid</td>
+                    <td>cert.is_valid=true</td>
+                    <td>筛选证书是有效证书的资产 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>cert.is_valid</td>
+                    <td>cert.is_valid=false</td>
+                    <td>筛选证书是无效证书的资产 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>cert.is_match</td>
+                    <td>cert.is_match=true</td>
+                    <td>筛选证书和域名匹配的资产 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>cert.is_match</td>
+                    <td>cert.is_match=false</td>
+                    <td>筛选证书和域名不匹配的资产 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>cert.is_expired</td>
+                    <td>cert.is_expired=true</td>
+                    <td>筛选证书已过期的资产 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>cert.is_expired</td>
+                    <td>cert.is_expired=false</td>
+                    <td>筛选证书未过期的资产 （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>jarm</td>
+                    <td>jarm="2ad2ad0002ad2ad22c2ad2ad2ad2ad2eac92ec34bcc0cf7520e97547f83e81"</td>
+                    <td>通过JARM指纹进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+                <tr>
+                    <td>tls.version</td>
+                    <td>tls.version="TLS 1.3"</td>
+                    <td>通过tls的协议版本进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>tls.ja3s</td>
+                    <td>tls.ja3s="15af977ce25de452b96affa2addb1036"</td>
+                    <td>通过tls的ja3s指纹进行查询</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">时间类（Last update time）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>after</td>
+                    <td>after="2023-01-01"</td>
+                    <td>筛选某一时间之后有更新的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>before</td>
+                    <td>before="2023-12-01"</td>
+                    <td>筛选某一时间之前有更新的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>after & before</td>
+                    <td>after="2023-01-01" && before="2023-12-01"</td>
+                    <td>筛选某一时间区间有更新的资产</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="subtitle">独立IP语法（独立IP系列语法，不可和上面其他语法共用）</h2>
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>语法</th>
+                    <th>例句</th>
+                    <th>用途说明</th>
+                    <th>=</th>
+                    <th>!=</th>
+                    <th>*=</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>port_size</td>
+                    <td>port_size="6"</td>
+                    <td>筛选开放端口数量等于6个的独立IP （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>✓</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>port_size_gt</td>
+                    <td>port_size_gt="6"</td>
+                    <td>筛选开放端口数量大于6个的独立IP （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>port_size_lt</td>
+                    <td>port_size_lt="12"</td>
+                    <td>筛选开放端口数量小于12个的独立IP （个人版及以上）</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip_ports</td>
+                    <td>ip_ports="80,161"</td>
+                    <td>筛选同时开放不同端口的独立IP</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip_country</td>
+                    <td>ip_country="CN"</td>
+                    <td>通过国家的简称代码进行查询独立IP</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip_region</td>
+                    <td>ip_region="Zhejiang"</td>
+                    <td>通过省份/地区英文名称进行查询独立IP</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip_city</td>
+                    <td>ip_city="Hangzhou"</td>
+                    <td>通过城市英文名称进行查询独立IP</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip_after</td>
+                    <td>ip_after="2021-03-18"</td>
+                    <td>筛选某一时间之后有更新的独立IP</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>ip_before</td>
+                    <td>ip_before="2019-09-09"</td>
+                    <td>筛选某一时间之前有更新的独立IP</td>
+                    <td>✓</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

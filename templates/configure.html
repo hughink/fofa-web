@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置 FOFA 信息</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">配置 FOFA 信息</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="field">
+                <label class="label">FOFA Email</label>
+                <div class="control">
+                    {{ form.email(class="input") }}
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">FOFA Key</label>
+                <div class="control">
+                    {{ form.key(class="input") }}
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    {{ form.submit(class="button is-primary") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
